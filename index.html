@@ -1,41 +1,471 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Links - Kadosh Tech</title>
-    <link rel="shortcut icon" href="img/faviconKadosh.png" type="image/png">
-    <link rel="stylesheet" href="css/style.css">
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Links — Kadosh Tech</title>
+<meta name="description" content="Soluções Digitais: Sites Profissionais e Sistemas de Agendamento."/>
+<link rel="shortcut icon" href="img/faviconKadosh.png" type="image/png"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+
+<style>
+/* ═══════════════════════════════════════════
+   RESET & TOKENS — idêntico ao site principal
+═══════════════════════════════════════════ */
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+:root {
+  --blue:       #2563eb;
+  --blue-dark:  #1d4ed8;
+  --blue-light: rgba(37,99,235,0.10);
+  --blue-glow:  rgba(37,99,235,0.32);
+  --text:       #1e293b;
+  --text-muted: #64748b;
+  --border:     #e2e8f0;
+  --bg:         #f8faff;
+  --glass-bg:   rgba(255,255,255,0.60);
+  --font-display:'Bebas Neue', sans-serif;
+  --font-body:  'Manrope', sans-serif;
+}
+
+html, body {
+  width:100%; min-height:100vh;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  overflow-x: hidden;
+  cursor: none;
+}
+
+/* ═══════════════════════════════════════════
+   CUSTOM CURSOR
+═══════════════════════════════════════════ */
+#cursor-dot, #cursor-ring {
+  position:fixed; top:0; left:0;
+  border-radius:50%; pointer-events:none;
+  z-index:9999; transform:translate(-50%,-50%);
+  transition:opacity .3s;
+}
+#cursor-dot { width:6px; height:6px; background:var(--blue); }
+#cursor-ring {
+  width:36px; height:36px;
+  border:1.5px solid rgba(37,99,235,0.55);
+  background:rgba(37,99,235,0.07);
+  transition:
+    width .25s cubic-bezier(.16,1,.3,1),
+    height .25s cubic-bezier(.16,1,.3,1),
+    background .25s, border-color .25s;
+}
+#cursor-ring.big {
+  width:60px; height:60px;
+  background:rgba(37,99,235,0.13);
+  border-color:rgba(37,99,235,0.85);
+}
+
+/* ═══════════════════════════════════════════
+   THREE.JS CANVAS
+═══════════════════════════════════════════ */
+#bg-canvas {
+  position:fixed; inset:0;
+  z-index:0; pointer-events:none;
+}
+
+/* ═══════════════════════════════════════════
+   LAYOUT — coluna centralizada
+═══════════════════════════════════════════ */
+.page {
+  position:relative; z-index:10;
+  min-height:100vh;
+  display:flex; flex-direction:column;
+  align-items:center; justify-content:center;
+  padding:60px 24px 48px;
+}
+
+/* ═══════════════════════════════════════════
+   CARD GLASSMORPHISM — container central
+═══════════════════════════════════════════ */
+.card {
+  width:100%; max-width:420px;
+  background:rgba(255,255,255,0.52);
+  backdrop-filter:blur(20px) saturate(180%);
+  -webkit-backdrop-filter:blur(20px) saturate(180%);
+  border:1px solid rgba(37,99,235,0.10);
+  border-radius:28px;
+  padding:44px 36px 40px;
+  box-shadow:
+    0 8px 48px rgba(37,99,235,0.07),
+    inset 0 1px 0 rgba(255,255,255,0.85);
+  position:relative; overflow:hidden;
+
+  /* entry animation */
+  opacity:0;
+  transform:translateY(28px);
+  animation:fadeUp .8s .15s cubic-bezier(.16,1,.3,1) forwards;
+}
+
+/* corner radial glows */
+.card::before {
+  content:''; position:absolute; top:-50px; right:-50px;
+  width:180px; height:180px;
+  background:radial-gradient(circle,rgba(37,99,235,0.10),transparent 70%);
+  pointer-events:none;
+}
+.card::after {
+  content:''; position:absolute; bottom:-40px; left:-40px;
+  width:140px; height:140px;
+  background:radial-gradient(circle,rgba(37,99,235,0.06),transparent 70%);
+  pointer-events:none;
+}
+
+/* ═══════════════════════════════════════════
+   LOGO / AVATAR
+═══════════════════════════════════════════ */
+.profile-wrap {
+  display:flex; justify-content:center; margin-bottom:22px;
+  opacity:0; animation:fadeUp .7s .3s cubic-bezier(.16,1,.3,1) forwards;
+}
+.profile-img {
+  width:88px; height:88px; border-radius:22px;
+  object-fit:cover;
+  border:2px solid rgba(37,99,235,0.15);
+  box-shadow:0 8px 28px rgba(37,99,235,0.15);
+}
+/* fallback quando não há imagem */
+.profile-fallback {
+  width:88px; height:88px; border-radius:22px;
+  background:var(--blue);
+  display:flex; align-items:center; justify-content:center;
+  box-shadow:0 8px 28px rgba(37,99,235,0.30);
+}
+.profile-fallback svg {
+  width:44px; height:44px; fill:none;
+  stroke:white; stroke-width:1.8; stroke-linecap:round;
+}
+
+/* ═══════════════════════════════════════════
+   TEXTOS
+═══════════════════════════════════════════ */
+.profile-name {
+  font-family:var(--font-display);
+  font-size:2rem; letter-spacing:.08em;
+  color:var(--text); text-align:center; line-height:1;
+  margin-bottom:8px;
+  opacity:0; animation:fadeUp .7s .4s cubic-bezier(.16,1,.3,1) forwards;
+}
+.profile-name span { color:var(--blue); }
+
+.profile-desc {
+  font-size:.82rem; font-weight:500;
+  letter-spacing:.04em; line-height:1.6;
+  color:var(--text-muted); text-align:center;
+  margin-bottom:36px;
+  opacity:0; animation:fadeUp .7s .5s cubic-bezier(.16,1,.3,1) forwards;
+}
+
+/* divider */
+.divider {
+  width:40px; height:1.5px;
+  background:linear-gradient(to right, transparent, var(--blue), transparent);
+  margin:0 auto 32px;
+  opacity:0; animation:fadeUp .7s .55s cubic-bezier(.16,1,.3,1) forwards;
+}
+
+/* ═══════════════════════════════════════════
+   LINK BUTTONS
+═══════════════════════════════════════════ */
+.links { display:flex; flex-direction:column; gap:14px; }
+
+.link-btn {
+  display:flex; align-items:center; gap:14px;
+  padding:16px 22px;
+  text-decoration:none;
+  border-radius:14px;
+  border:1px solid var(--border);
+  background:rgba(255,255,255,0.55);
+  cursor:none;
+  position:relative; overflow:hidden;
+  transition:
+    border-color .22s,
+    box-shadow .22s,
+    transform .22s cubic-bezier(.16,1,.3,1),
+    background .22s;
+
+  opacity:0;
+}
+
+/* staggered entry */
+.link-btn:nth-child(1){ animation:fadeUp .7s .65s cubic-bezier(.16,1,.3,1) forwards; }
+.link-btn:nth-child(2){ animation:fadeUp .7s .75s cubic-bezier(.16,1,.3,1) forwards; }
+.link-btn:nth-child(3){ animation:fadeUp .7s .85s cubic-bezier(.16,1,.3,1) forwards; }
+.link-btn:nth-child(4){ animation:fadeUp .7s .95s cubic-bezier(.16,1,.3,1) forwards; }
+
+/* mouse-follow glow inside each button */
+.link-btn::before {
+  content:'';
+  position:absolute; inset:0;
+  background:radial-gradient(
+    circle at var(--mx,50%) var(--my,50%),
+    rgba(37,99,235,0.08) 0%, transparent 65%
+  );
+  opacity:0; transition:opacity .3s; pointer-events:none;
+}
+.link-btn:hover { border-color:rgba(37,99,235,0.30); box-shadow:0 8px 28px rgba(37,99,235,0.12); transform:translateY(-2px); background:rgba(255,255,255,0.75); }
+.link-btn:hover::before { opacity:1; }
+
+/* icon circle */
+.btn-icon {
+  width:38px; height:38px; flex-shrink:0;
+  background:var(--blue-light); border-radius:10px;
+  display:grid; place-items:center;
+  font-size:1.1rem; line-height:1;
+  transition:background .22s, transform .22s;
+}
+.link-btn:hover .btn-icon {
+  background:var(--blue);
+  transform:scale(1.08) rotate(-4deg);
+}
+/* flip emoji colour in hover — not possible with CSS alone, handled via filter */
+.link-btn:hover .btn-icon { filter:none; }
+
+/* text */
+.btn-body { flex:1; }
+.btn-title {
+  display:block;
+  font-size:.9rem; font-weight:600;
+  color:var(--text); letter-spacing:.02em;
+  transition:color .2s;
+}
+.link-btn:hover .btn-title { color:var(--blue); }
+.btn-sub {
+  display:block;
+  font-size:.72rem; color:var(--text-muted);
+  margin-top:2px; letter-spacing:.02em;
+}
+
+/* arrow */
+.btn-arrow {
+  width:18px; height:18px; flex-shrink:0;
+  stroke:var(--text-muted); fill:none;
+  stroke-width:2; stroke-linecap:round;
+  transition:stroke .2s, transform .2s;
+}
+.link-btn:hover .btn-arrow { stroke:var(--blue); transform:translate(3px,-3px); }
+
+/* ═══════════════════════════════════════════
+   FOOTER
+═══════════════════════════════════════════ */
+.page-footer {
+  margin-top:28px;
+  font-size:.68rem; font-weight:500;
+  letter-spacing:.12em; text-transform:uppercase;
+  color:var(--text-muted); opacity:.7;
+  text-align:center;
+  opacity:0; animation:fadeUp .7s 1.0s cubic-bezier(.16,1,.3,1) forwards;
+}
+.page-footer span { color:var(--blue); }
+
+/* ═══════════════════════════════════════════
+   KEYFRAMES
+═══════════════════════════════════════════ */
+@keyframes fadeUp {
+  from { opacity:0; transform:translateY(24px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+
+/* cursor: none on mobile not great — restore */
+@media (hover:none) {
+  html, body { cursor:auto; }
+  #cursor-dot, #cursor-ring { display:none; }
+}
+</style>
 </head>
 <body>
 
-    <div class="container">
-        <!-- COLOQUE A URL DA SUA FOTO AQUI NO 'SRC' -->
-        <img src="img/logoKadosh.png" alt="Foto da Barbearia" class="profile-img">
-        
-        <h1>Kadosh Tech</h1>
-        <p class="description">Soluções Digitais:Sites Profissionais e Sistemas de Agendamento.</p>
+<!-- Cursor -->
+<div id="cursor-dot"></div>
+<div id="cursor-ring"></div>
 
-        <div class="link-group">
-            <!-- Link 1: Site/Portfólio -->
-            <a href="https://misael337.github.io/Kadosh-Techh/" class="link-btn" target="_blank">
-                <span class="btn-title">💻 Orçamento de Site</span>
-            </a>
-            
-            <!-- Link 2: Detalhes do Sistema -->
-            <a href="https://misael337.github.io/Explica-sistema/" class="link-btn" target="_blank">
-                <span class="btn-title">💈 Sistema para Barbearias</span>
-            </a>
-            
-    
+<!-- Three.js canvas -->
+<canvas id="bg-canvas"></canvas>
 
-        <footer>© 2026 Kadosh Tech</footer>
+<!-- ════════ PAGE ════════ -->
+<div class="page">
+  <div class="card">
+
+    <!-- Avatar / Logo -->
+    <div class="profile-wrap">
+      <img
+        src="img/logoKadosh.png"
+        alt="Kadosh Tech"
+        class="profile-img"
+      />
     </div>
 
-<script defer src="/_vercel/insights/script.js"></script>
+    <!-- Nome -->
+    <h1 class="profile-name">KADOSH<span>TECH</span></h1>
+
+    <!-- Descrição -->
+    <p class="profile-desc">Soluções Digitais: Sites Profissionais<br/>e Sistemas de Agendamento.</p>
+
+    <div class="divider"></div>
+
+    <!-- Links -->
+    <div class="links">
+
+      <a href="https://misael337.github.io/Kadosh-Techh/" target="_blank" rel="noopener" class="link-btn">
+        <div class="btn-icon">💻</div>
+        <div class="btn-body">
+          <span class="btn-title">Orçamento de Site</span>
+          <span class="btn-sub">Solicite seu projeto personalizado</span>
+        </div>
+        <svg class="btn-arrow" viewBox="0 0 24 24"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
+      </a>
+
+      <a href="https://misael337.github.io/Explica-sistema/" target="_blank" rel="noopener" class="link-btn">
+        <div class="btn-icon">💈</div>
+        <div class="btn-body">
+          <span class="btn-title">Sistema para Barbearias</span>
+          <span class="btn-sub">Agendamento online profissional</span>
+        </div>
+        <svg class="btn-arrow" viewBox="0 0 24 24"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
+      </a>
+
+    </div>
+  </div>
+
+  <footer class="page-footer">© 2026 <span>Kadosh Tech</span></footer>
+</div>
+
+
+<!-- ════════ THREE.JS ════════ -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
-  window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+(function(){
+  const canvas   = document.getElementById('bg-canvas');
+  const renderer = new THREE.WebGLRenderer({canvas, antialias:true, alpha:true});
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
+  renderer.setClearColor(0xf8faff,1);
+  renderer.setSize(window.innerWidth, window.innerHeight);
+
+  const scene  = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(55, window.innerWidth/window.innerHeight, 0.1, 200);
+  camera.position.z = 8;
+
+  /* partículas */
+  const COUNT = 1400;
+  const geo   = new THREE.BufferGeometry();
+  const pos   = new Float32Array(COUNT*3);
+  const alpha = new Float32Array(COUNT);
+  for(let i=0;i<COUNT;i++){
+    pos[i*3]   = (Math.random()-.5)*26;
+    pos[i*3+1] = (Math.random()-.5)*16;
+    pos[i*3+2] = (Math.random()-.5)*10;
+    alpha[i]   = .12 + Math.random()*.40;
+  }
+  geo.setAttribute('position', new THREE.BufferAttribute(pos,3));
+  geo.setAttribute('alpha',    new THREE.BufferAttribute(alpha,1));
+
+  const mat = new THREE.ShaderMaterial({
+    transparent:true, depthWrite:false,
+    vertexShader:`
+      attribute float alpha; varying float vAlpha; uniform float uPR;
+      void main(){
+        vAlpha=alpha;
+        vec4 mv=modelViewMatrix*vec4(position,1.0);
+        gl_PointSize=uPR*(2.0+alpha*2.8)*(8.0/-mv.z);
+        gl_Position=projectionMatrix*mv;
+      }`,
+    fragmentShader:`
+      varying float vAlpha;
+      void main(){
+        float d=length(gl_PointCoord-.5);
+        if(d>.5)discard;
+        float s=smoothstep(.5,.05,d);
+        gl_FragColor=vec4(.145,.388,.922,s*vAlpha*.60);
+      }`,
+    uniforms:{ uPR:{value:renderer.getPixelRatio()} }
+  });
+  const pts = new THREE.Points(geo,mat);
+  scene.add(pts);
+
+  /* quadrados geométricos flutuantes */
+  const lm = new THREE.LineBasicMaterial({color:0x2563eb, transparent:true, opacity:.08});
+  function sq(x,y,z,s){
+    const p=[new THREE.Vector3(-s,-s,0),new THREE.Vector3(s,-s,0),new THREE.Vector3(s,s,0),new THREE.Vector3(-s,s,0),new THREE.Vector3(-s,-s,0)];
+    const l=new THREE.Line(new THREE.BufferGeometry().setFromPoints(p),lm);
+    l.position.set(x,y,z); l.rotation.z=Math.random()*Math.PI; scene.add(l); return l;
+  }
+  const squares=[sq(-5,2.5,0,1.0),sq(4.5,-1,-.5,.7),sq(2.5,3,-2,.5),sq(-3.5,-2.5,-1,1.3)];
+
+  /* parallax mouse */
+  let mx=0,my=0;
+  window.addEventListener('mousemove',e=>{
+    mx=(e.clientX/window.innerWidth-.5)*2;
+    my=(e.clientY/window.innerHeight-.5)*2;
+  });
+
+  window.addEventListener('resize',()=>{
+    camera.aspect=window.innerWidth/window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth,window.innerHeight);
+    mat.uniforms.uPR.value=renderer.getPixelRatio();
+  });
+
+  const clock = new THREE.Clock();
+  function tick(){
+    requestAnimationFrame(tick);
+    const t=clock.getElapsedTime();
+    pts.rotation.y=t*.016; pts.rotation.x=t*.008;
+    camera.position.x+=(mx*.5-camera.position.x)*.03;
+    camera.position.y+=(-my*.35-camera.position.y)*.03;
+    camera.lookAt(scene.position);
+    squares.forEach((s,i)=>s.rotation.z+=.0012*(i%2?-1:1));
+    renderer.render(scene,camera);
+  }
+  tick();
+})();
 </script>
+
+<!-- ════════ CURSOR ════════ -->
+<script>
+(function(){
+  const dot  = document.getElementById('cursor-dot');
+  const ring = document.getElementById('cursor-ring');
+  let rx=0,ry=0,dx=0,dy=0;
+  window.addEventListener('mousemove',e=>{
+    dx=e.clientX; dy=e.clientY;
+    dot.style.left=dx+'px'; dot.style.top=dy+'px';
+  });
+  function lerp(a,b,t){return a+(b-a)*t;}
+  (function loop(){
+    rx=lerp(rx,dx,.14); ry=lerp(ry,dy,.14);
+    ring.style.left=rx+'px'; ring.style.top=ry+'px';
+    requestAnimationFrame(loop);
+  })();
+  document.querySelectorAll('a,.link-btn').forEach(el=>{
+    el.addEventListener('mouseenter',()=>ring.classList.add('big'));
+    el.addEventListener('mouseleave',()=>ring.classList.remove('big'));
+  });
+  document.addEventListener('mouseleave',()=>{dot.style.opacity='0';ring.style.opacity='0';});
+  document.addEventListener('mouseenter',()=>{dot.style.opacity='1';ring.style.opacity='1';});
+})();
+</script>
+
+<!-- ════════ BUTTON GLOW MOUSE-TRACKING ════════ -->
+<script>
+document.querySelectorAll('.link-btn').forEach(btn=>{
+  btn.addEventListener('mousemove',e=>{
+    const r=btn.getBoundingClientRect();
+    btn.style.setProperty('--mx',((e.clientX-r.left)/r.width*100).toFixed(1)+'%');
+    btn.style.setProperty('--my',((e.clientY-r.top)/r.height*100).toFixed(1)+'%');
+  });
+});
+</script>
+
+<script defer src="/_vercel/insights/script.js"></script>
+<script>window.va=window.va||function(){(window.vaq=window.vaq||[]).push(arguments);};</script>
 
 </body>
 </html>
